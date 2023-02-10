@@ -1,0 +1,31 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile-prod
+    container_name: lab5-frontend
+    command: serve -s build -l 3000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    # stdin_open: true
+    # tty: true
+
+  api:
+    build: ./api
+    command: npm run start
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - HOST=http://localhost
+      - MONGO_DB=mongodb://api_db:27017/api
+    depends_on:
+      - api_db
+  api_db:
+    image: mongo:latest
+    volumes:
+      - mongodb_api:/data/db
+volumes:
+  mongodb_api:
